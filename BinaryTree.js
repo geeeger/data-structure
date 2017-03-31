@@ -159,6 +159,7 @@
         else {
             return root.left ? root.left : root.right;
         }
+        return root;
     };
 
     BinaryTreeProto._findMax = function (root) {
