@@ -10,9 +10,10 @@
     // 储存结构
     
     function Entry (key, value, hashcode) {
-        this.key = key;
-        this.value = value;
-        this.hashcode = hashcode;
+        var self = this;
+        self.key = key;
+        self.value = value;
+        self.hashcode = hashcode;
     }
 
     var EntryProto = Entry.prototype;
@@ -54,11 +55,12 @@
     }
 
     function HashMap() {
-        this._capacity = 32;
-        this._tableSize = 0;
-        this._size = 0;
-        this._resizeRatio = 0.5;
-        this._table = new Array(this._capacity);
+        var self = this;
+        self._capacity = 32;
+        self._tableSize = 0;
+        self._size = 0;
+        self._resizeRatio = 0.5;
+        self._table = new Array(self._capacity);
     }
 
     var HashMapProto = HashMap.prototype;
@@ -76,18 +78,19 @@
     };
 
     HashMapProto.put = function (key, value) {
+        var self = this;
         // 如果空位少于一半，我们增加数组长度
-        if (this._tableSize / this._capacity > this._resizeRatio) {
-            this._resize();
+        if (self._tableSize / self._capacity > self._resizeRatio) {
+            self._resize();
         } 
-        this.remove(key); // 这里是一个偷懒的小方法。因为map中不能存在同样的key，所以在放入新的key的时候，如果这个key已经存在，新的值将会覆盖旧的值。
-        var entry = new Entry(key, value, this._hashFunction(key));
-        if (!this._table[entry.hashcode]){ // 如果篮子是空的
-            this._table[entry.hashcode] = new LinkedList();
-            this._tableSize++; // 这里我们记录目前数组之中list的个数
+        self.remove(key); // 这里是一个偷懒的小方法。因为map中不能存在同样的key，所以在放入新的key的时候，如果这个key已经存在，新的值将会覆盖旧的值。
+        var entry = new Entry(key, value, self._hashFunction(key));
+        if (!self._table[entry.hashcode]){ // 如果篮子是空的
+            self._table[entry.hashcode] = new LinkedList();
+            self._tableSize++; // 这里我们记录目前数组之中list的个数
         }
-        this._table[entry.getHashcode()].add(entry); // 在对应的篮子中放入key value
-        this._size++;
+        self._table[entry.getHashcode()].add(entry); // 在对应的篮子中放入key value
+        self._size++;
     };
 
 
@@ -124,11 +127,12 @@
     };
 
     HashMapProto.containsKey = function(key) {
-        var hashcode = this._hashFunction(key);
-        if (hashcode >= this._table.length || this._size <= 0) {
+        var self = this;
+        var hashcode = self._hashFunction(key);
+        if (hashcode >= self._table.length || self._size <= 0) {
             return false;
         }
-        var list = this._table[hashcode];
+        var list = self._table[hashcode];
         if (!list) {
             return false;
         }
@@ -151,7 +155,6 @@
             return item.getKey() === key;
         });
         if (list.isEmpty()) {
-            console.log(list)
             self._tableSize--;
             self._table[hashcode] = undefined;
         }
@@ -159,11 +162,12 @@
     };
 
     HashMapProto.get = function (key) {
-        var hashcode = this._hashFunction(key);
-        if (hashcode >= this._table.length || this._size <= 0) {
+        var self = this;
+        var hashcode = self._hashFunction(key);
+        if (hashcode >= self._table.length || self._size <= 0) {
             return null;
         }
-        var list = this._table[hashcode];
+        var list = self._table[hashcode];
         if (!list) {
             return null;
         }
