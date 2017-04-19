@@ -15,6 +15,7 @@
 
     function LinkedList(root) {
         this.root = root || null;
+        this._size = !!root ? 1 : 0;
     }
 
     var LinkedListProto = LinkedList.prototype;
@@ -27,6 +28,7 @@
         else {
             self.root = new Node(element, self.root);
         }
+        self._size++;
     };
 
     LinkedListProto.removeFirst = function () {
@@ -36,6 +38,7 @@
         }
         var element = self.root.treasure;
         self.root = self.root.next;
+        self._size--;
         return element;
     };
 
@@ -53,11 +56,34 @@
 
     LinkedListProto.remove = function (element) {
         var self = this;
+        return this.removeIf(function (item) {
+            return item === element;
+        });
+    };
+
+    LinkedListProto.stream = function () {
+        var self = this;
+        var stream = [];
+        if (self.root === null) {
+            return stream;
+        }
+        var current = self.root;
+        while (current != null) {
+            stream.push(current.treasure);
+            current = current.next;
+        }
+        return stream;
+    };
+
+    LinkedListProto.removeIf = function (callback) {
+        var self = this;
         if (self.root === null) {
             return false;
         }
-        if (self.root.treasure === element) {
+
+        if(callback(self.root.treasure)) {
             self.root = self.root.next;
+            self._size--;
             return true;
         }
 
@@ -65,8 +91,9 @@
         var previous = self.root;
 
         while (current != null) {
-            if (current.treasure === element) {
+            if (callback(current.treasure)) {
                 previous.next = current.next;
+                self._size--;
                 return true;
             }
             previous = current;
@@ -82,6 +109,10 @@
             return true;
         }
         return false;
+    };
+
+    LinkedListProto.isEmpty = function () {
+        return self._size === 0;
     }
 
     return LinkedList;
