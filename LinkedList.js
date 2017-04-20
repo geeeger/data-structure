@@ -8,17 +8,42 @@
     }
 }(this, function () {
 
+    var isSupportLiterator = 'Symbol' in window;
+
     function Node(element, next) {
         this.treasure = element;
         this.next = next;
     }
 
+    Node.prototype.getValue = function () {
+        return this.treasure;
+    };
+
     function LinkedList(root) {
         this.root = root || null;
-        this._size = !!root ? 1 : 0;
+        // this._size = !!root ? 1 : 0;
+        this.length = !!root ? 1 : 0;
     }
 
     var LinkedListProto = LinkedList.prototype;
+
+    if (isSupportLiterator) {
+        LinkedListProto[Symbol.iterator] = function () {
+            var current = this.root;
+            return {
+                next: function () {
+                    if (current) {
+                        var value = current.getValue();
+                        current = current.next;
+                        return { value: value }
+                    }
+                    else {
+                        return { done: true }
+                    }
+                }
+            }
+        }
+    }
 
     LinkedListProto.add = function (element) {
         var self = this;
@@ -28,7 +53,7 @@
         else {
             self.root = new Node(element, self.root);
         }
-        self._size++;
+        self.length++;
     };
 
     LinkedListProto.removeFirst = function () {
@@ -38,7 +63,7 @@
         }
         var element = self.root.treasure;
         self.root = self.root.next;
-        self._size--;
+        self.length--;
         return element;
     };
 
@@ -83,7 +108,7 @@
 
         if(callback(self.root.treasure)) {
             self.root = self.root.next;
-            self._size--;
+            self.length--;
             return true;
         }
 
@@ -93,7 +118,7 @@
         while (current != null) {
             if (callback(current.treasure)) {
                 previous.next = current.next;
-                self._size--;
+                self.length--;
                 return true;
             }
             previous = current;
@@ -112,7 +137,7 @@
     };
 
     LinkedListProto.isEmpty = function () {
-        return self._size === 0;
+        return self.length === 0;
     }
 
     return LinkedList;
