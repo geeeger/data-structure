@@ -109,15 +109,19 @@
         // 这里还原弦子聚聚原写法而已
         var array = new Array(self._capacity);
 
+        self._tableSize = 0;
+
         self._table
             .filter(function (item) {
                 return item !== undefined;
             })
             .forEach(function (item, index) {
-                item.stream().forEach(function (e, i) {
+                // item.stream().forEach(function (e, i) {
+                Array.from(item).forEach(function (e, i) {
                     e.hashcode = self._hashFunction(e.getKey());
                     if (!array[e.hashcode]) {
                         array[e.hashcode] = new LinkedList();
+                        self._tableSize++;
                     }
                     array[e.hashcode].add(e);
                 });
@@ -136,7 +140,8 @@
         if (!list) {
             return false;
         }
-        return list.stream().filter(function (item) {
+        // return list.stream().filter(function (item) {
+        return Array.from(list).filter(function (item) {
             return item.getKey() === key;
         }).length > 0;
     };
@@ -171,8 +176,15 @@
         if (!list) {
             return null;
         }
-        return list
-            .stream()
+        // return list
+        //     .stream()
+        //     .filter(function (item) {
+        //         return item.getKey() === key;
+        //     })
+        //     .map(function (item) {
+        //         return item.getValue();
+        //     })[0] || null;
+        return Array.from(list)
             .filter(function (item) {
                 return item.getKey() === key;
             })
