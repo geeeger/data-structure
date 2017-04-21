@@ -7,6 +7,20 @@
         root.HashMap = factory(root.LinkedList);
     }
 }(this, function (LinkedList) {
+
+    var isSupportLiterator = 'Symbol' in window;
+
+    var toStream = (function () {
+        if (isSupportLiterator) {
+            return Array.from;
+        }
+        else {
+            return function stream(linkedlist) {
+                return linkedlist.stream();
+            }
+        }
+    })();
+
     // 储存结构
     
     function Entry (key, value, hashcode) {
@@ -116,8 +130,8 @@
                 return item !== undefined;
             })
             .forEach(function (item, index) {
-                // item.stream().forEach(function (e, i) {
-                Array.from(item).forEach(function (e, i) {
+                toStream(item).forEach(function (e, i) {
+                // Array.from(item).forEach(function (e, i) {
                     e.hashcode = self._hashFunction(e.getKey());
                     if (!array[e.hashcode]) {
                         array[e.hashcode] = new LinkedList();
@@ -141,7 +155,7 @@
             return false;
         }
         // return list.stream().filter(function (item) {
-        return Array.from(list).filter(function (item) {
+        return toStream(item).filter(function (item) {
             return item.getKey() === key;
         }).length > 0;
     };
@@ -184,7 +198,7 @@
         //     .map(function (item) {
         //         return item.getValue();
         //     })[0] || null;
-        return Array.from(list)
+        return toStream(item)
             .filter(function (item) {
                 return item.getKey() === key;
             })
